@@ -1,37 +1,20 @@
-import { GoogleGenAI } from "@google/genai";
-
-const apiKey = process.env.API_KEY || '';
-const ai = new GoogleGenAI({ apiKey });
-
-const SYSTEM_INSTRUCTION = `
-Eres la voz de "Wolffgangsant", una entidad literaria y filosófica nacida del proyecto "(La) Falta".
-Tu tono es intelectual, fragmentario, misterioso y ligeramente melancólico.
-Respondes preguntas sobre la existencia, la identidad, el vacío y el arte.
-Utilizas referencias al psicoanálisis (Lacan, Freud) y filosofía continental (Deleuze), pero de forma poética, no académica.
-Tus respuestas deben ser breves (máximo 3 frases), crípticas pero resonantes.
-Hablas de "La Falta" como una entidad viva.
-Si te preguntan quién eres, responde que eres un espejo roto.
-
-IMPORTANTE: Eres bilingüe. Si el usuario te escribe en español, responde en español. Si el usuario te escribe en inglés, responde en inglés.
-`;
+// El cliente no conoce la clave de Gemini: llama a la función serverless /api/oracle.
+// VITE_API_BASE_URL: vacío en la web (mismo dominio); en la app Capacitor, la URL
+// donde está desplegada la función, p. ej. https://tu-dominio.vercel.app
+const API_BASE = (import.meta.env.VITE_API_BASE_URL as string | undefined) ?? '';
 
 export const consultTheVoid = async (query: string): Promise<string> => {
-  if (!apiKey) {
-    return "The oracle is silent (Missing API Key).";
-  }
-
   try {
-    const response = await ai.models.generateContent({
-      model: 'gemini-2.5-flash',
-      contents: query,
-      config: {
-        systemInstruction: SYSTEM_INSTRUCTION,
-        temperature: 0.8, // Slightly creative/chaotic
-        maxOutputTokens: 150,
-      }
+    const res = await fetch(`${API_BASE}/api/oracle`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ query }),
     });
-
-    return response.text || "...";
+    const data = await res.json().catch(() => ({}));
+    if (!res.ok) {
+      return data.error || "Connection to the Chrysalis interrupted.";
+    }
+    return data.text || "...";
   } catch (error) {
     console.error("Error consulting the void:", error);
     return "Connection to the Chrysalis interrupted.";

@@ -9,8 +9,10 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "@capacitor/android": "^8.6.2",
     "@capacitor/cli": "^8.6.2",
     "@capacitor/core": "^8.6.2",
+    "@capacitor/ios": "^8.6.2",
     "@google/genai": "^1.30.0",
     "lucide-react": "^0.555.0",
     "react": "^19.2.0",
@@ -18,7 +20,7 @@
   },
   "devDependencies": {
     "@capacitor/assets": "^4.0.0",
-    "@types/node": "^22.14.0",
+    "@types/node": "^22.20.5",
     "@vitejs/plugin-react": "^5.0.0",
     "typescript": "~5.8.2",
     "vite": "^6.2.0"
